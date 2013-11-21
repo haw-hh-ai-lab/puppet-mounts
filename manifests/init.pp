@@ -9,7 +9,7 @@ define mounts (
   $passno = 0,
   $ensure = 'present'){
 
-  // mounting like this only makes sense in unixoid operating systems. Stop all other
+  # mounting like this only makes sense in unixoid operating systems. Stop all other
   case $::osfamily {
     'RedHat', Debian, SuSe, Solaris: {}
     default: { fail('Your operating system is not supported by this module') }
@@ -39,7 +39,7 @@ define mounts (
 
   if $type == 'nfs' {
    
-     // set up packages and services
+     # set up packages and services
      case $::operatingsystem {
        redhat, centos, amazon: {
 
