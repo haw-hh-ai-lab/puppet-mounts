@@ -9,6 +9,12 @@ define mounts (
   $passno = 0,
   $ensure = 'present'){
 
+  // mounting like this only makes sense in unixoid operating systems. Stop all other
+  case $::osfamily {
+    'RedHat', Debian, SuSe, Solaris: {}
+    default: { fail('Your operating system is not supported by this module') }
+  }
+  
   if $source == undef {
     err('The source parameter is required.')
   }
@@ -21,10 +27,7 @@ define mounts (
     err('The type parameter is required.')
   }
 
-  case $::operatingsystem {
-    redhat, centos, amazon: {
-
-      fstab { "fstab entry for ${source} to ${dest} as ${type}":
+  fstab { "fstab entry for ${source} to ${dest} as ${type}":
         ensure => $ensure,
         source => $source,
         dest   => $dest,
@@ -32,51 +35,63 @@ define mounts (
         opts   => $opts,
         dump   => $dump,
         passno => $passno,
-      }
+  }
 
-      if $type == 'nfs' {
-        ensure_resource('package', 'nfs-utils', {'ensure' => 'present'})
-        case $::operatingsystemmajrelease {
-          '6': {
-            ensure_resource('package', 'rpcbind', {'ensure' => 'present'})
-            ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
-            Package['rpcbind'] -> Service['rpcbind']
-          }
-          '5': {
-            ensure_resource('package', 'portmap', {'ensure' => 'present'})
-            ensure_resource('service', 'portmap', {'ensure' => 'running'})
-            Package['portmap'] -> Service['portmap']
-          }
-          default: {
-            alert('Unsupported version of OS')
-          }
-        }
-      }
+  if $type == 'nfs' {
+   
+     // set up packages and services
+     case $::operatingsystem {
+       redhat, centos, amazon: {
 
-      case $ensure {
-        'present': {
-          # Ensure the entire tree of the destination has been created.
-          $dirtree = dirtree($dest)
-          ensure_resource('file', $dirtree, {'ensure' => 'directory'})
+         ensure_resource('package', 'nfs-utils', {'ensure' => 'present'})
+         case $::operatingsystemmajrelease {
+           '6': {
+             ensure_resource('package', 'rpcbind', {'ensure' => 'present'})
+             ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
+             Package['rpcbind'] -> Service['rpcbind']
+           }
+           '5': {
+             ensure_resource('package', 'portmap', {'ensure' => 'present'})
+             ensure_resource('service', 'portmap', {'ensure' => 'running'})
+             Package['portmap'] -> Service['portmap']
+           }
+           default: {
+             alert('Unsupported version of OS')
+           }
+         }
+       }
+       ubuntu, debian: {
+         ensure_resource('package', 'nfs-common', {'ensure' => 'present'})
+         ensure_resource('package', 'rpcbind', {'ensure' => 'present'})
+         ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
+         Package['rpcbind'] -> Service['rpcbind']
+       }
+       default: { err('Your OS isn\'t supported by the mounts module yet.') }
+     }
+  }     
+     
 
-          exec { "/bin/mount '${dest}'":
-            unless  => "/bin/mount -l | /bin/grep '${dest}'",
-            require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
-          }
-        }
-        'absent': {
-          exec { "/bin/umount '${dest}'":
-            onlyif => "/bin/mount -l | /bin/grep '${dest}'",
-            before => Fstab["fstab entry for ${source} to ${dest} as ${type}"],
-          }
+  case $ensure {
+     'present': {
+       # Ensure the entire tree of the destination has been created.
+       $dirtree = dirtree($dest)
+       ensure_resource('file', $dirtree, {'ensure' => 'directory'})
 
-          # Note: we won't remove the directory since we don't know if it'll destroy data
-          notify { "${dest} wasn't removed after being unmounted.  Please remove it manually.": }
-        }
-        default: { }
-      }
-    }
-    default: { err('Your OS isn\'t supported by the mounts module yet.') }
+       exec { "/bin/mount '${dest}'":
+         unless  => "/bin/mount -l | /bin/grep '${dest}'",
+         require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
+       }
+     }
+     'absent': {
+       exec { "/bin/umount '${dest}'":
+         onlyif => "/bin/mount -l | /bin/grep '${dest}'",
+         before => Fstab["fstab entry for ${source} to ${dest} as ${type}"],
+       }
+
+       # Note: we won't remove the directory since we don't know if it'll destroy data
+       notify { "${dest} wasn't removed after being unmounted.  Please remove it manually.": }
+     }
+     default: { }
   }
 
 }
