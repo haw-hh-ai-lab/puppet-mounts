@@ -1,9 +1,9 @@
 fixtures:
   repositories:
-    fstab:   "git@github.com:AlexCline/puppet-fstab.git"
-    dirtree: "git@github.com:AlexCline/puppet-dirtree.git"
+    fstab:   "https://github.com:AlexCline/puppet-fstab.git"
+    dirtree: "https://github.com/AlexCline/puppet-dirtree.git"
     stdlib: 
-      repo: "git://github.com/puppetlabs/puppetlabs-stdlib"
+      repo: "https://github.com/puppetlabs/puppetlabs-stdlib"
       ref: "4.1.0"
   symlinks:
     mailman: "#{source_dir}"
