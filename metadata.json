@@ -1,0 +1,26 @@
+{
+  "name": "AlexCline-mounts",
+  "version": "0.3.0",
+  "summary": "The mounts module will help manage mount points on linux systems.",
+  "author": "Alex Cline \u003calex.cline@gmail.com\u003e",
+  "description": "The mounts module will help manage mount points on linux systems.",
+  "dependencies": [
+    {
+      "name": "AlexCline/fstab",
+      "version_requirement": "\u003e\u003d 0.1.0"
+    },
+    {
+      "name": "AlexCline/dirtree",
+      "version_requirement": "\u003e\u003d 0.1.1"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": "\u003e\u003d 4.1.0"
+    }
+  ],
+  "types": [],
+  "checksums": {},
+  "source": "",
+  "project_page": "https://github.com/AlexCline/fstab",
+  "license": "Apache License, Version 2.0"
+}
