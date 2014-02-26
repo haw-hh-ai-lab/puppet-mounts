@@ -3,7 +3,7 @@
 # 
 require 'spec_helper'
 
-describe mounts do
+describe 'mounts' do
   let(:node) { 'testhost.example.org' }
   let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
   
