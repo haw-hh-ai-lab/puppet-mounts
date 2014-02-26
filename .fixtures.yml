@@ -1,6 +1,6 @@
 fixtures:
   repositories:
-    fstab:   "https://github.com:AlexCline/puppet-fstab.git"
+    fstab:   "https://github.com/AlexCline/puppet-fstab.git"
     dirtree: "https://github.com/AlexCline/puppet-dirtree.git"
     stdlib: 
       repo: "https://github.com/puppetlabs/puppetlabs-stdlib"
