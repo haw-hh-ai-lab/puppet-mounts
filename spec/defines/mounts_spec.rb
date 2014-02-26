@@ -15,9 +15,11 @@ describe 'mounts' do
       :type   => 'ext4',
     } }
 
-    should contain_mounts('Test NFS Mount' )
+    it do
+      should contain_mounts('Test NFS Mount' )
 
-    should have_fstab_resource_count(1)
-
+      should have_fstab_resource_count(1)
+      
+    end
   end
 end
