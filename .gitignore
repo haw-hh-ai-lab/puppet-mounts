@@ -16,3 +16,4 @@ tags
 
 !.gitignore
 pkg
+/metadata.json

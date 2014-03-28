@@ -1,9 +1,17 @@
 {
-  "name": "AlexCline-mounts",
-  "version": "0.3.0",
-  "summary": "The mounts module will help manage mount points on linux systems.",
   "author": "Alex Cline \u003calex.cline@gmail.com\u003e",
-  "description": "The mounts module will help manage mount points on linux systems.",
+  "checksums": {
+    "manifests\\init.pp": "d8cee700de1bbe2466c40a3166781575",
+    "Rakefile": "9b0889decdd0884155684846f795c274",
+    "spec\\spec_helper.rb": "2b77b100a835d5b20f7f0bd3bfa1440c",
+    "spec\\defines\\mounts_spec.rb": "eba10714aa010342a9f8e46307ca6806",
+    "tests\\init.pp": "7b562932df0e12facdb5aa514dcc79a2",
+    "spec\\fixtures\\hiera\\hiera.yaml": "67b96b66d1af7403a33293dc4c9e496d",
+    "spec\\fixtures\\hiera\\test.yaml": "3712df32c4ef31630ca1297d07e9cb79",
+    "Modulefile": "7f5407ae6a1a7fd9782b3f3f642609f1",
+    "README.md": "53e8f1bd2e2aa5db88d85c334a61c6dd",
+    ".fixtures.yml": "8c0786aa0cfac30bcb9c5a49bd3883fd"
+  },
   "dependencies": [
     {
       "name": "AlexCline/fstab",
@@ -18,9 +26,12 @@
       "version_requirement": "\u003e\u003d 4.1.0"
     }
   ],
-  "types": [],
-  "checksums": {},
-  "source": "",
+  "description": "The mounts module will help manage mount points on linux systems.",
+  "license": "Apache License, Version 2.0",
+  "name": "AlexCline-mounts",
   "project_page": "https://github.com/AlexCline/fstab",
-  "license": "Apache License, Version 2.0"
+  "source": "",
+  "summary": "The mounts module will help manage mount points on linux systems.",
+  "types": [],
+  "version": "0.3.0"
 }

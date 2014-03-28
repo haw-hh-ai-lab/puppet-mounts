@@ -16,7 +16,6 @@ describe 'mounts' do
     } }
 
     it do
-      should contain_mounts('Test NFS Mount' )
 
       should have_fstab_resource_count(1)
       
