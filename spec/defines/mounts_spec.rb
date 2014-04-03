@@ -25,7 +25,7 @@ describe 'mounts' do
   context 'a test of an nfs mount' do
     let(:title) { 'Sample NFS mount' }
     let(:params) { {
-      :ensure => present,
+      :ensure => 'present',
       :source => 'host.example.com',
       :dest   => '/a/path/to/more/data',
       :type   => 'nfs',
@@ -42,7 +42,7 @@ describe 'mounts' do
   context 'test removal of an entry' do
     let(:title) { 'Sample NFS mount' }
     let(:params) { {
-      :ensure => absent,
+      :ensure => 'absent',
       :source => 'host.example.com',
       :dest   => '/a/path/to/more/data',
       :type   => 'nfs',
