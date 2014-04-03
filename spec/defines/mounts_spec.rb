@@ -55,7 +55,8 @@ describe 'mounts' do
       
     it do
 
-      should have_fstab_resource_count(0)
+      # module will create a fstab entry even if the filesystem is unmounted.
+      should have_fstab_resource_count(1)
       
     end
   end
