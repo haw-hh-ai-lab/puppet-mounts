@@ -6,4 +6,4 @@ fixtures:
       repo: "https://github.com/puppetlabs/puppetlabs-stdlib"
       ref: "4.1.0"
   symlinks:
-    mailman: "#{source_dir}"
+    mounts: "#{source_dir}"

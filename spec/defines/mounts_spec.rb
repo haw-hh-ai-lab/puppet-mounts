@@ -8,7 +8,7 @@ describe 'mounts' do
   let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
   
   context 'simple mount of local filesystem' do
-    let(:title) { 'Test NFS Mount' }
+    let(:title) { 'Sample local mount' }
     let(:params) { {
       :source => '/dev/sdb2',
       :dest   => '/a/path/to/data',
