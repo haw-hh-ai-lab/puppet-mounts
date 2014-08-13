@@ -16,15 +16,15 @@ define mounts (
   }
 
   if $source == undef {
-    err('The source parameter is required.')
+    fail('The source parameter is required.')
   }
 
   if $dest == undef {
-    err('The dest parameter is required.')
+    fail('The dest parameter is required.')
   }
 
   if $type == undef {
-    err('The type parameter is required.')
+    fail('The type parameter is required.')
   }
 
   fstab { "fstab entry for ${source} to ${dest} as ${type}":
@@ -66,7 +66,7 @@ define mounts (
          ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
          Package['rpcbind'] -> Service['rpcbind']
        }
-       default: { err('Your OS isn\'t supported by the mounts module yet.') }
+       default: { fail('Your OS isn\'t supported by the mounts module yet.') }
      }
   }
 
