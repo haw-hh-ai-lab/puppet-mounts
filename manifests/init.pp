@@ -21,19 +21,18 @@ define mounts (
     err('The type parameter is required.')
   }
 
+  fstab { "fstab entry for ${source} to ${dest} as ${type}":
+    ensure => $ensure,
+    source => $source,
+    dest   => "$dest",
+    type   => $type,
+    opts   => $opts,
+    dump   => $dump,
+    passno => $passno,
+  }
+
   case $::operatingsystem {
     redhat, centos, amazon: {
-
-      fstab { "fstab entry for ${source} to ${dest} as ${type}":
-        ensure => $ensure,
-        source => $source,
-        dest   => $dest,
-        type   => $type,
-        opts   => $opts,
-        dump   => $dump,
-        passno => $passno,
-      }
-
       if $type == 'nfs' {
         ensure_resource('package', 'nfs-utils', {'ensure' => 'present'})
         case $::operatingsystemmajrelease {
@@ -52,34 +51,39 @@ define mounts (
           }
         }
       }
-
-      case $ensure {
-        'present': {
-          # Ensure the entire tree of the destination has been created.
-          $dirtree = dirtree($dest)
-          ensure_resource('file', $dirtree, {'ensure' => 'directory'})
-
-          $noauto = $opts ? { /(^|,)noauto($|,)/ => true, default => false }
-          if ! $noauto {
-            exec { "/bin/mount '${dest}'":
-              unless  => "/bin/mount -l | /bin/grep '${dest}'",
-              require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
-            }
-          }
-        }
-        'absent': {
-          exec { "/bin/umount '${dest}'":
-            onlyif => "/bin/mount -l | /bin/grep '${dest}'",
-            before => Fstab["fstab entry for ${source} to ${dest} as ${type}"],
-          }
-
-          # Note: we won't remove the directory since we don't know if it'll destroy data
-          notify { "${dest} wasn't removed after being unmounted.  Please remove it manually.": }
-        }
-        default: { }
+    }
+    debian, ubuntu: {
+      if $type == 'nfs' {
+        ensure_resource('package', 'nfs-common', {'ensure' => 'present'})
       }
     }
     default: { err('Your OS isn\'t supported by the mounts module yet.') }
+  }
+
+  case $ensure {
+    'present': {
+      # Ensure the entire tree of the destination has been created.
+      $dirtree = dirtree($dest)
+      ensure_resource('file', $dirtree, {'ensure' => 'directory'})
+      
+      $noauto = $opts ? { /(^|,)noauto($|,)/ => true, default => false }
+      if ! $noauto {
+        exec { "/bin/mount '${dest}'":
+          unless  => "/bin/mount -l | /bin/grep '${dest}'",
+          require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
+        }
+      }
+    }
+    'absent': {
+      exec { "/bin/umount '${dest}'":
+        onlyif => "/bin/mount -l | /bin/grep '${dest}'",
+        before => Fstab["fstab entry for ${source} to ${dest} as ${type}"],
+      }
+
+      # Note: we won't remove the directory since we don't know if it'll destroy data
+      notify { "${dest} wasn't removed after being unmounted.  Please remove it manually.": }
+    }
+    default: { }
   }
 
 }
