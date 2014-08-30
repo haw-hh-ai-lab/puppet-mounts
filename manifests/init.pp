@@ -31,6 +31,7 @@ define mounts (
     dump   => $dump,
     passno => $passno,
   }
+  $fstab = Fstab["fstab entry for ${source} to ${dest} as ${type}"]
 
   case $::operatingsystem {
     redhat, centos, amazon: {
@@ -73,7 +74,7 @@ define mounts (
       if ! $noauto {
         exec { "/bin/mount '${dest}'":
           unless  => "/bin/mount -l | /bin/grep '${dest}'",
-          require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
+          require => [File[$dirtree], $fstab],
         }
       }
     }
