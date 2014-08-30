@@ -59,9 +59,12 @@ define mounts (
           $dirtree = dirtree($dest)
           ensure_resource('file', $dirtree, {'ensure' => 'directory'})
 
-          exec { "/bin/mount '${dest}'":
-            unless  => "/bin/mount -l | /bin/grep '${dest}'",
-            require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
+          $noauto = $opts ? { /(^|,)noauto($|,)/ => true, default => false }
+          if ! $noauto {
+            exec { "/bin/mount '${dest}'":
+              unless  => "/bin/mount -l | /bin/grep '${dest}'",
+              require => [File[$dirtree], Fstab["fstab entry for ${source} to ${dest} as ${type}"]],
+            }
           }
         }
         'absent': {
