@@ -7,7 +7,8 @@ define mounts (
   $opts   = 'defaults',
   $dump   = 0,
   $passno = 0,
-  $ensure = 'present'){
+  $ensure = 'present',
+  $mkdir  = true){
 
   if $source == undef {
     err('The source parameter is required.')
@@ -64,7 +65,9 @@ define mounts (
     'present': {
       # Ensure the entire tree of the destination has been created.
       $dirtree = dirtree($dest)
-      ensure_resource('file', $dirtree, {'ensure' => 'directory'})
+      if $mkdir {
+        ensure_resource('file', $dirtree, {'ensure' => 'directory'})
+      }
       
       $noauto = $opts ? { /(^|,)noauto($|,)/ => true, default => false }
       if ! $noauto {
