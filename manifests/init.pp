@@ -70,8 +70,8 @@ define mounts (
         ensure_resource('file', $dirtree, {'ensure' => 'directory'})
       }
       
-      $noauto = $opts ? { /(^|,)noauto($|,)/ => true, default => false }
-      if ! $noauto {
+      $auto = $opts ? { /(^|,)noauto($|,)/ => false, default => true }
+      if $auto {
         exec { "/bin/mount '${dest}'":
           unless  => "/bin/mount -l | /bin/grep '${dest}'",
           require => [File[$dirtree], $fstab],
