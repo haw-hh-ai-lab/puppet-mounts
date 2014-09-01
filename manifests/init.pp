@@ -25,7 +25,7 @@ define mounts (
   fstab { "fstab entry for ${source} to ${dest} as ${type}":
     ensure => $ensure,
     source => $source,
-    dest   => "$dest",
+    dest   => "${dest}",
     type   => $type,
     opts   => $opts,
     dump   => $dump,
