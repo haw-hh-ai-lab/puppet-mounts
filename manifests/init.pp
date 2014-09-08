@@ -8,7 +8,8 @@ define mounts (
   $dump   = 0,
   $passno = 0,
   $ensure = 'present',
-  $mkdir  = true){
+  $mkdir  = true,
+  $force_mount = []){
 
   if $source == undef {
     err('The source parameter is required.')
@@ -71,7 +72,8 @@ define mounts (
       }
       
       $auto = $opts ? { /(^|,)noauto($|,)/ => false, default => true }
-      if $auto {
+      $chroot = !member($force_mount, 'chroot') and $::is_chroot
+      if $auto and !$chroot {
         exec { "/bin/mount '${dest}'":
           unless  => "/bin/mount -l | /bin/grep '${dest}'",
           require => [File[$dirtree], $fstab],

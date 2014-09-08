@@ -1,4 +1,4 @@
-define mounts::tmpfs($source = 'tmpfs', $dest = undef, $opts = undef, $mkdir = true, $ensure = 'present') {
+define mounts::tmpfs($source = 'tmpfs', $dest = undef, $opts = undef, $mkdir = true, $ensure = 'present', $force_mount = []) {
 	$real_dest = $dest ? { undef => $title, default => $dest }
 	mounts { $title:
 		source => $source,
@@ -6,6 +6,7 @@ define mounts::tmpfs($source = 'tmpfs', $dest = undef, $opts = undef, $mkdir = t
 		type   => 'tmpfs',
 		opts   => $opts,
 		mkdir  => $mkdir,
-		ensure => $ensure
+		ensure => $ensure,
+		force_mount => $force_mount
 	}
 }
