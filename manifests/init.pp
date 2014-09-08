@@ -23,6 +23,8 @@ define mounts (
     err('The type parameter is required.')
   }
 
+  $dest2 = "${dest}"
+
   fstab { "fstab entry for ${source} to ${dest} as ${type}":
     ensure => $ensure,
     source => $source,
@@ -66,28 +68,61 @@ define mounts (
   case $ensure {
     'present': {
       # Ensure the entire tree of the destination has been created.
-      $dirtree = dirtree($dest)
+      $dirtree = dirtree("$dest2")
+      $dirtree_parents = dirtree(dirname("$dest2"))
       if $mkdir {
         ensure_resource('file', $dirtree, {'ensure' => 'directory'})
+
+        # The root folder is not part of $dirtree (for whatever reason),
+        # but we may need it later.
+        # This doesn't work: ensure_resource('file', ['/'], {'ensure' => 'directory', 'path' => '/'})
+        if "$dest2" == "/" {
+          file { '/':
+            ensure => 'directory',
+            path => '//'
+          }
+        }
+
+        # We need two directory resources:
+        # 1. A directory for the mount point. It must exist
+        #    before we mount the file system.
+        # 2. A directory resource for the mounted directory to
+        #    set its attributes and make sure that all tasks
+        #    that depend on the directory will be executed
+        #    after it is mounted.
+        # The first one is declared here (with a different name) and
+        # the second one has been declared above as part of the dirtree.
+        # Unfortunately, we cannot really make this a file resource
+        # because it would conflict with the other file resource
+        # (even if we use a different name).
+        exec { "$dest2?mountpoint":
+          command => "/bin/mkdir -p '$dest2'",
+          creates => $dest2,
+          require => File[$dirtree_parents]
+        }
       }
       
       $auto = $opts ? { /(^|,)noauto($|,)/ => false, default => true }
       $chroot = !member($force_mount, 'chroot') and $::is_chroot
       if $auto and !$chroot {
-        exec { "/bin/mount '${dest}'":
-          unless  => "/bin/mount -l | /bin/grep '${dest}'",
-          require => [File[$dirtree], $fstab],
+        exec { "/bin/mount '${dest2}'":
+          unless  => "/bin/mount -l | /bin/grep '${dest2}'",
+          require => [File[$dirtree_parents], $fstab],
+        }
+
+        if $mkdir {
+          Exec["$dest2?mountpoint"] -> Exec["/bin/mount '${dest2}'"] -> File[$dest2]
         }
       }
     }
     'absent': {
-      exec { "/bin/umount '${dest}'":
-        onlyif => "/bin/mount -l | /bin/grep '${dest}'",
-        before => Fstab["fstab entry for ${source} to ${dest} as ${type}"],
+      exec { "/bin/umount '${dest2}'":
+        onlyif => "/bin/mount -l | /bin/grep '${dest2}'",
+        before => Fstab["fstab entry for ${source} to ${dest2} as ${type}"],
       }
 
       # Note: we won't remove the directory since we don't know if it'll destroy data
-      notify { "${dest} wasn't removed after being unmounted.  Please remove it manually.": }
+      notify { "${dest2} wasn't removed after being unmounted.  Please remove it manually.": }
     }
     default: { }
   }
