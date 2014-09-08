@@ -106,7 +106,7 @@ define mounts (
       $chroot = !member($force_mount, 'chroot') and $::is_chroot
       if $auto and !$chroot {
         exec { "/bin/mount '${dest2}'":
-          unless  => "/bin/mount -l | /bin/grep '${dest2}'",
+          unless  => "/bin/mount -l | /bin/grep -F ' on ${dest2} type '",
           require => [File[$dirtree_parents], $fstab],
         }
 
@@ -117,7 +117,7 @@ define mounts (
     }
     'absent': {
       exec { "/bin/umount '${dest2}'":
-        onlyif => "/bin/mount -l | /bin/grep '${dest2}'",
+        onlyif => "/bin/mount -l | /bin/grep -F ' on ${dest2} type '",
         before => Fstab["fstab entry for ${source} to ${dest2} as ${type}"],
       }
 
