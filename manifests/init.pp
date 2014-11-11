@@ -11,8 +11,8 @@ define mounts (
 
   # mounting like this only makes sense in unixoid operating systems. Stop all other
   case $::osfamily {
-    'RedHat', Debian, SuSe, Solaris: {}
-    default: { fail('Your operating system is not supported by this module') }
+    'RedHat', 'Debian', 'SuSE', 'Solaris': {}
+    default: { fail("Your operating system family '${::osfamily}' is not supported by this module") }
   }
 
   if $source == undef {
