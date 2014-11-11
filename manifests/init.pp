@@ -66,7 +66,7 @@ define mounts (
          ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
          Package['rpcbind'] -> Service['rpcbind']
        }
-       default: { fail('Your OS isn\'t supported by the mounts module yet.') }
+       default: { fail("Your OS '${::operatingsystem}' isn\'t supported by the mounts module yet.") }
      }
   }
 

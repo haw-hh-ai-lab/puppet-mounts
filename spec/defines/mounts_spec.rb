@@ -7,9 +7,10 @@ describe 'mounts' do
   let(:node) { 'testhost.example.org' }
   let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
   
-  let(:facts) { {
-                 :osfamily => 'Debian',
-              } }
+  let(:facts) {{
+    :osfamily => 'Debian',
+    :operatingsystem => 'Ubuntu',
+  }}
    
   context 'simple mount of local filesystem' do
     let(:title) { 'Sample local mount' }
