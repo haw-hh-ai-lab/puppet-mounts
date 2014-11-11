@@ -60,7 +60,7 @@ define mounts (
            }
          }
        }
-       ubuntu, debian: {
+       'Ubuntu', 'Debian': {
          ensure_resource('package', 'nfs-common', {'ensure' => 'present'})
          ensure_resource('package', 'rpcbind', {'ensure' => 'present'})
          ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
