@@ -57,6 +57,21 @@ define mounts (
         }
       }
     }
+    fedora: {
+      if $type == 'nfs' {
+        ensure_resource('package', 'nfs-utils', {'ensure' => 'present'})
+        case $::operatingsystemmajrelease {
+          '20': {
+            ensure_resource('package', 'rpcbind', {'ensure' => 'present'})
+            ensure_resource('service', 'rpcbind', {'ensure' => 'running'})
+            Package['rpcbind'] -> Service['rpcbind']
+          }
+          default: {
+            alert('Unsupported version of OS')
+          }
+        }
+      }
+    }
     debian, ubuntu: {
       if $type == 'nfs' {
         ensure_resource('package', 'nfs-common', {'ensure' => 'present'})
