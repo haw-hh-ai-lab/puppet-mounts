@@ -122,7 +122,7 @@ define mounts (
           require => File[$dirtree_parents]
         }
       }
-      
+
       $auto = $opts ? { /(^|,)noauto($|,)/ => false, default => true }
       $chroot = !member($force_mount, 'chroot') and $::is_chroot
       if $auto and !$chroot {
@@ -143,7 +143,9 @@ define mounts (
       }
 
       # Note: we won't remove the directory since we don't know if it'll destroy data
-      notify { "${dest2} wasn't removed after being unmounted.  Please remove it manually.": }
+      notify { "${dest2} wasn't removed after being unmounted.  Please remove it manually.":
+        subscribe => Exec["/bin/umount '${dest2}'"],
+      }
     }
     default: { }
   }
